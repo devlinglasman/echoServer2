@@ -1,9 +1,11 @@
+import java.io.IOException;
+import java.net.ServerSocket;
+
 public class MainServer {
 
-    public static void main(String[] args) {
-        int portNumber = 6666;
-        Server server = new Server(System.in, System.out, portNumber);
-
-        server.start();
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(6666);
+        Server server = new Server(serverSocket);
+        server.connectClient();
     }
 }

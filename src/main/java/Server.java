@@ -1,26 +1,37 @@
 import java.io.*;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server {
 
-    private InputStream in;
-    private PrintStream out;
-    private int portNumber;
+    private InputStream clientIn;
+    private OutputStream clientOut;
     private ServerSocket serverSocket;
+    private Socket clientSocket;
 
-    public Server(InputStream in, PrintStream out, int portNumber) {
-        this.in = in;
-        this.out = out;
-        this.portNumber = portNumber;
+    public Server(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
     }
 
-    public void start() {
+    public void connectClient() {
         try {
-            serverSocket = new ServerSocket(portNumber);
-        } catch (IOException e) {
+            clientSocket = serverSocket.accept();
+            clientIn = clientSocket.getInputStream();
+            clientOut = clientSocket.getOutputStream();
+
+            clientOut.write(Message.clientConnected.getBytes());
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        out.print(Message.awaitingConnection);
+    }
+
+    public void echoMessage() throws IOException {
+        BufferedReader newIn = new BufferedReader(new InputStreamReader(clientIn));
+        String input;
+            while ((input = newIn.readLine()) != null) {
+                clientOut.write(input.getBytes());
+            }
     }
 }
